@@ -1,0 +1,10 @@
+flask
+flask-socketio
+plotly
+pandas
+numpy
+scikit-learn
+slack_sdk
+python-telegram-bot
+boto3
+pytest

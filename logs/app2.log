@@ -1,0 +1,11 @@
+2025-08-26 WARNING App2 memory leak
+2025-08-26 ERROR App2 timeout
+2025-08-26 WARNING App2 memory leak
+2025-08-26 ERROR App2 timeout
+2025-08-26 INFO App2 started
+2025-08-26 WARNING High memory usage
+2025-08-26 INFO Background job running
+2025-08-26 ERROR Disk read failed2025-08-27 23:39:41 WARNING Disk space low
+2025-08-27 23:39:47 INFO Service heartbeat OK
+2025-08-27 23:39:50 INFO Booting up
+2025-08-27 23:39:52 INFO Started successfully

@@ -1,0 +1,16 @@
+2025-08-26 INFO App1 started
+2025-08-26 ERROR App1 crash detected
+2025-08-26 INFO App1 started
+2025-08-26 ERROR App1 crash detected
+2025-08-26 INFO App1 booting up
+2025-08-26 ERROR Database connection failed
+2025-08-26 ERROR Database retry failed
+2025-08-26 ERROR Cache miss
+2025-08-26 ERROR Request timeout
+2025-08-26 ERROR Request timeout again
+2025-08-26 CRITICAL App1 kernel panic2025-08-27 23:39:34 INFO User login successful
+2025-08-27 23:39:36 ERROR Cache miss
+2025-08-27 23:39:46 INFO Service heartbeat OK
+2025-08-27 23:39:48 INFO User login successful
+2025-08-27 23:39:50 WARNING Disk space low
+2025-08-27 23:39:51 WARNING Thread pool saturation
