@@ -81,3 +81,8 @@ logs/
 
 # AWS credentials (never commit real credentials)
 .aws/
+
+# SRS and documentation
+SRS.txt
+*.pdf
+

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log Analyser Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f7f7f7; }
+        h1 { color: #2c3e50; }
+        .logs, .anomalies { margin-top: 2em; }
+        .log-entry { background: #fff; margin-bottom: 0.5em; padding: 0.5em; border-radius: 4px; }
+        .anomaly { color: #c0392b; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Log Analyser Dashboard</h1>
+    <div>
+        <canvas id="logChart" width="600" height="200"></canvas>
+    </div>
+    <div class="anomalies">
+        <h2>Anomalies</h2>
+        <ul id="anomaly-list"></ul>
+    </div>
+    <div class="logs">
+        <h2>Recent Logs</h2>
+        <div id="log-list"></div>
+    </div>
+    <script>
+        async function fetchLogs() {
+            const res = await fetch('/api/logs');
+            return res.json();
+        }
+        async function fetchAnomalies() {
+            const res = await fetch('/api/anomalies');
+            return res.json();
+        }
+        function renderLogs(logs) {
+            const logList = document.getElementById('log-list');
+            logList.innerHTML = logs.map(log => `<div class="log-entry">[${log.level}] ${log.message}</div>`).join('');
+        }
+        function renderAnomalies(analysis) {
+            const anomalyList = document.getElementById('anomaly-list');
+            if (analysis.anomalies && analysis.anomalies.length > 0) {
+                anomalyList.innerHTML = analysis.anomalies.map(a => `<li class="anomaly">${a}</li>`).join('');
+            } else {
+                anomalyList.innerHTML = '<li>No anomalies detected</li>';
+            }
+        }
+        function renderChart(counts) {
+            const ctx = document.getElementById('logChart').getContext('2d');
+            if (window.logChart) window.logChart.destroy();
+            window.logChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: 'Log Levels',
+                        data: Object.values(counts),
+                        backgroundColor: ['#2980b9', '#f39c12', '#e74c3c', '#8e44ad']
+                    }]
+                },
+                options: { responsive: false }
+            });
+        }
+        async function updateDashboard() {
+            const [logs, analysis] = await Promise.all([fetchLogs(), fetchAnomalies()]);
+            renderLogs(logs);
+            renderAnomalies(analysis);
+            renderChart(analysis.counts || {});
+        }
+        setInterval(updateDashboard, 2000);
+        updateDashboard();
+    </script>
+</body>
+</html>

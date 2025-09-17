@@ -14,3 +14,87 @@
 2025-08-27 23:39:48 INFO User login successful
 2025-08-27 23:39:50 WARNING Disk space low
 2025-08-27 23:39:51 WARNING Thread pool saturation
+2025-09-16 13:35:44 INFO [user6] [svc-cache] [req-7026] Background job running
+2025-09-16 13:35:16 INFO [user8] [svc-auth] [req-3038] Booting up
+{"timestamp": 1758009948.055247, "level": "WARNING", "message": "Slow response time", "user_id": "user8", "service_id": "svc-db", "request_id": "req-7193"}
+{"timestamp": 1758009999.775996, "level": "INFO", "message": "User login successful", "user_id": "user5", "service_id": "svc-auth", "request_id": "req-7125"}
+{"timestamp": 1758009971.649486, "level": "INFO", "message": "Started successfully", "user_id": "user9", "service_id": "svc-db", "request_id": "req-6398"}
+2025-09-16 13:35:46 WARNING [user1] [svc-cache] [req-9379] Slow response time
+{"timestamp": 1758009927.119051, "level": "INFO", "message": "Booting up", "user_id": "user10", "service_id": "svc-auth", "request_id": "req-2919"}
+2025-09-16 13:35:09 INFO [user5] [svc-db] [req-5491] User login successful
+2025-09-16 13:36:59 INFO [user2] [svc-api] [req-1756] Booting up
+2025-09-16 13:36:53 ERROR [user5] [svc-cache] [req-2813] Disk read failed
+{"timestamp": 1758009961.8822558, "level": "ERROR", "message": "Database connection failed", "user_id": "user1", "service_id": "svc-cache", "request_id": "req-1675"}
+{"timestamp": 1758009993.406126, "level": "INFO", "message": "Booting up", "user_id": "user5", "service_id": "svc-db", "request_id": "req-3209"}
+{"timestamp": 1758009995.326798, "level": "INFO", "message": "Background job running", "user_id": "user2", "service_id": "svc-cache", "request_id": "req-8703"}
+{"timestamp": 1758009934.448405, "level": "INFO", "message": "Background job running", "user_id": "user7", "service_id": "svc-api", "request_id": "req-9211"}
+{"timestamp": 1758009985.435499, "level": "INFO", "message": "Service heartbeat OK", "user_id": "user7", "service_id": "svc-db", "request_id": "req-2898"}
+{"timestamp": 1758010015.180736, "level": "WARNING", "message": "Slow response time", "user_id": "user2", "service_id": "svc-auth", "request_id": "req-9761"}
+{"timestamp": 1758010015.640894, "level": "INFO", "message": "User login successful", "user_id": "user9", "service_id": "svc-cache", "request_id": "req-8093"}
+{"timestamp": 1758010050.049122, "level": "ERROR", "message": "Database connection failed", "user_id": "user10", "service_id": "svc-cache", "request_id": "req-1602"}
+{"timestamp": 1758009984.88416, "level": "ERROR", "message": "Cache miss", "user_id": "user3", "service_id": "svc-db", "request_id": "req-9698"}
+2025-09-16 13:35:41 ERROR [user7] [svc-auth] [req-8743] Crash detected
+{"timestamp": 1758010058.889282, "level": "ERROR", "message": "Database connection failed", "user_id": "user3", "service_id": "svc-auth", "request_id": "req-3443"}
+2025-09-16 13:37:48 INFO [user9] [svc-db] [req-4505] Background job running
+{"timestamp": 1758010202.5420039, "level": "ERROR", "message": "Request timeout", "user_id": "user5", "service_id": "svc-db", "request_id": "req-5416"}
+2025-09-16 13:38:59 ERROR [user10] [svc-auth] [req-5413] Disk read failed
+2025-09-16 13:40:00 INFO [user3] [svc-auth] [req-8501] Started successfully
+{"timestamp": 1758010245.418112, "level": "INFO", "message": "User login successful", "user_id": "user3", "service_id": "svc-cache", "request_id": "req-9856"}
+{"timestamp": 1758010187.6187599, "level": "INFO", "message": "Started successfully", "user_id": "user10", "service_id": "svc-api", "request_id": "req-2412"}
+{"timestamp": 1758010164.593865, "level": "WARNING", "message": "High memory usage", "user_id": "user5", "service_id": "svc-api", "request_id": "req-9003"}
+{"timestamp": 1758010207.759479, "level": "WARNING", "message": "Disk space low", "user_id": "user3", "service_id": "svc-db", "request_id": "req-1621"}
+2025-09-16 13:40:24 CRITICAL [user3] [svc-auth] [req-1559] Kernel panic
+{"timestamp": 1758010245.1938, "level": "ERROR", "message": "Database connection failed", "user_id": "user10", "service_id": "svc-db", "request_id": "req-1599"}
+{"timestamp": 1758010185.379321, "level": "ERROR", "message": "Crash detected", "user_id": "user2", "service_id": "svc-auth", "request_id": "req-1663"}
+{"timestamp": 1758010184.231415, "level": "INFO", "message": "Started successfully", "user_id": "user2", "service_id": "svc-auth", "request_id": "req-4363"}
+{"timestamp": 1758010229.944968, "level": "INFO", "message": "Booting up", "user_id": "user3", "service_id": "svc-auth", "request_id": "req-7776"}
+2025-09-16 13:40:22 ERROR [user9] [svc-db] [req-4300] Timeout
+2025-09-16 13:39:38 ERROR [user3] [svc-cache] [req-8527] Disk read failed
+2025-09-16 13:39:52 INFO [user9] [svc-api] [req-2808] User login successful
+2025-09-16 13:41:36 ERROR [user10] [svc-db] [req-5696] Database connection failed
+2025-09-16 13:39:45 ERROR [user9] [svc-cache] [req-7401] Timeout
+{"timestamp": 1758010906.351476, "level": "WARNING", "message": "Thread pool saturation", "user_id": "user5", "service_id": "svc-auth", "request_id": "req-2891"}
+2025-09-16 13:51:28 WARNING [user9] [svc-db] [req-5637] High memory usage
+{"timestamp": 1758010866.150522, "level": "WARNING", "message": "Thread pool saturation", "user_id": "user9", "service_id": "svc-cache", "request_id": "req-9076"}
+2025-09-16 13:51:28 INFO [user2] [svc-api] [req-4915] User login successful
+{"timestamp": 1758011181.314933, "level": "ERROR", "message": "Cache miss", "user_id": "user5", "service_id": "svc-auth", "request_id": "req-9180"}
+{"timestamp": 1758011154.113307, "level": "ERROR", "message": "Crash detected", "user_id": "user9", "service_id": "svc-cache", "request_id": "req-4175"}
+{"timestamp": 1758011184.9641979, "level": "CRITICAL", "message": "System halt required", "user_id": "user10", "service_id": "svc-cache", "request_id": "req-8082"}
+2025-09-16 13:55:44 ERROR [user5] [svc-cache] [req-5446] Database connection failed
+{"timestamp": 1758011193.32605, "level": "ERROR", "message": "Database connection failed", "user_id": "user3", "service_id": "svc-db", "request_id": "req-9910"}
+{"timestamp": 1758011139.5255098, "level": "ERROR", "message": "Request timeout", "user_id": "user8", "service_id": "svc-cache", "request_id": "req-4212"}
+2025-09-16 13:56:03 INFO [user2] [svc-api] [req-2952] User login successful
+2025-09-16 13:56:26 INFO [user2] [svc-db] [req-3095] Booting up
+{"timestamp": 1758011252.330791, "level": "INFO", "message": "Started successfully", "user_id": "user9", "service_id": "svc-api", "request_id": "req-7303"}
+{"timestamp": 1758011230.301461, "level": "INFO", "message": "Booting up", "user_id": "user8", "service_id": "svc-api", "request_id": "req-2212"}
+{"timestamp": 1758011202.591618, "level": "INFO", "message": "Booting up", "user_id": "user1", "service_id": "svc-api", "request_id": "req-9574"}
+{"timestamp": 1758011202.5122728, "level": "WARNING", "message": "Slow response time", "user_id": "user1", "service_id": "svc-db", "request_id": "req-2980"}
+{"timestamp": 1758011278.5617962, "level": "ERROR", "message": "Database connection failed", "user_id": "user1", "service_id": "svc-api", "request_id": "req-5223"}
+2025-09-16 13:57:56 INFO [user6] [svc-auth] [req-7497] User login successful
+{"timestamp": 1758011253.429016, "level": "INFO", "message": "Booting up", "user_id": "user9", "service_id": "svc-cache", "request_id": "req-9866"}
+2025-09-16 13:58:08 WARNING [user8] [svc-auth] [req-2994] Slow response time
+{"timestamp": 1758011188.143059, "level": "INFO", "message": "Started successfully", "user_id": "user4", "service_id": "svc-auth", "request_id": "req-8480"}
+{"timestamp": 1758011210.05026, "level": "INFO", "message": "Started successfully", "user_id": "user4", "service_id": "svc-api", "request_id": "req-3788"}
+2025-09-16 13:58:02 INFO [user9] [svc-auth] [req-3241] Background job running
+{"timestamp": 1758011242.769175, "level": "ERROR", "message": "Disk read failed", "user_id": "user3", "service_id": "svc-api", "request_id": "req-2262"}
+2025-09-16 13:57:09 ERROR [user4] [svc-auth] [req-7244] Timeout
+2025-09-16 13:57:04 INFO [user4] [svc-api] [req-8169] Started successfully
+2025-09-16 13:57:25 CRITICAL [user7] [svc-db] [req-9550] Fatal memory leak
+2025-09-16 13:58:06 WARNING [user3] [svc-auth] [req-1491] High memory usage
+2025-09-16 13:58:01 INFO [user4] [svc-db] [req-7647] Service heartbeat OK
+{"timestamp": 1758011225.368961, "level": "ERROR", "message": "Cache miss", "user_id": "user5", "service_id": "svc-db", "request_id": "req-6765"}
+2025-09-16 13:57:04 ERROR [user6] [svc-auth] [req-4017] Crash detected
+{"timestamp": 1758011249.0695791, "level": "WARNING", "message": "Slow response time", "user_id": "user8", "service_id": "svc-auth", "request_id": "req-3665"}
+2025-09-16 13:57:29 CRITICAL [user8] [svc-db] [req-9563] Data corruption detected
+2025-09-16 13:58:31 INFO [user5] [svc-auth] [req-3901] Booting up
+2025-09-16 13:58:51 INFO [user10] [svc-cache] [req-5266] Started successfully
+2025-09-16 13:57:41 ERROR [user6] [svc-api] [req-2545] Database connection failed
+{"timestamp": 1758011331.5324328, "level": "ERROR", "message": "Request timeout", "user_id": "user5", "service_id": "svc-db", "request_id": "req-2635"}
+2025-09-16 13:58:50 INFO [user5] [svc-cache] [req-8937] Background job running
+2025-09-16 13:59:03 WARNING [user3] [svc-auth] [req-3251] Disk space low
+2025-09-16 13:58:36 WARNING [user3] [svc-api] [req-7369] Slow response time
+{"timestamp": 1758011581.016476, "level": "INFO", "message": "Booting up", "user_id": "user5", "service_id": "svc-cache", "request_id": "req-5106"}
+2025-09-16 14:01:27 ERROR [user9] [svc-cache] [req-8404] Crash detected
+2025-09-16 14:01:54 ERROR [user3] [svc-api] [req-1292] Timeout
+{"timestamp": 1758011492.0266979, "level": "ERROR", "message": "Cache miss", "user_id": "user10", "service_id": "svc-db", "request_id": "req-7222"}
+{"timestamp": 1758011562.850409, "level": "INFO", "message": "Started successfully", "user_id": "user9", "service_id": "svc-api", "request_id": "req-4041"}
