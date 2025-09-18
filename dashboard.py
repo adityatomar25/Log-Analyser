@@ -1,3 +1,77 @@
+import yaml
+import json
+import hashlib
+
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+
+
+GMAIL_USER = config["gmail_user"]
+GMAIL_APP_PASSWORD = config["gmail_app_password"]
+ALERT_RECIPIENT = config["alert_recipient"]
+SLACK_WEBHOOK_URL = config.get("slack_webhook_url")
+import requests
+ALERT_STATE_FILE = "alert_state.json"
+
+def get_alert_state():
+    try:
+        with open(ALERT_STATE_FILE, "r") as f:
+            return json.load(f)
+    except Exception:
+        return {"last_alert": 0, "last_hash": None}
+
+def set_alert_state(ts, msg_hash):
+    try:
+        with open(ALERT_STATE_FILE, "w") as f:
+            json.dump({"last_alert": ts, "last_hash": msg_hash}, f)
+    except Exception as e:
+        print(f"[AlertState] Failed to write: {e}")
+
+def send_slack_alert(message):
+    import time
+    RATE_LIMIT_SECONDS = 300  # 5 minutes
+    now = time.time()
+    state = get_alert_state()
+    msg_hash = hashlib.sha256(message.encode()).hexdigest()
+    if now - state.get("last_alert", 0) < RATE_LIMIT_SECONDS and state.get("last_hash") == msg_hash:
+        print("[Alert] Duplicate or rate-limited Slack alert not sent.")
+        return
+    if not SLACK_WEBHOOK_URL:
+        print("[Slack] Webhook URL not configured. Alert not sent.")
+        return
+    payload = {"text": message}
+    try:
+        response = requests.post(SLACK_WEBHOOK_URL, json=payload)
+        if response.status_code != 200:
+            print(f"[Slack] Failed to send alert: {response.text}")
+        set_alert_state(now, msg_hash)
+    except Exception as e:
+        print(f"[Slack] Exception: {e}")
+
+import smtplib
+from email.mime.text import MIMEText
+
+def send_email_alert(subject, body):
+    import time
+    RATE_LIMIT_SECONDS = 300  # 5 minutes
+    now = time.time()
+    state = get_alert_state()
+    msg_hash = hashlib.sha256(body.encode()).hexdigest()
+    if now - state.get("last_alert", 0) < RATE_LIMIT_SECONDS and state.get("last_hash") == msg_hash:
+        print("[Alert] Duplicate or rate-limited email not sent.")
+        return
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = GMAIL_USER
+    msg['To'] = ALERT_RECIPIENT
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
+            server.sendmail(GMAIL_USER, [ALERT_RECIPIENT], msg.as_string())
+        set_alert_state(now, msg_hash)
+    except Exception as e:
+        print(f"[Email] Exception: {e}")
+
 from fastapi import FastAPI, Request, Body, Depends, HTTPException, status, Response, Cookie, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -62,6 +136,17 @@ def start_log_collector():
                 analyzer.add_log(parsed_log)
                 save_log_to_db(parsed_log)
                 dashboard_analysis = analyzer.analyze()
+                # --- ALERTING LOGIC START ---
+                error_count = dashboard_analysis['counts'].get('ERROR', 0)
+                critical_count = dashboard_analysis['counts'].get('CRITICAL', 0)
+                if error_count + critical_count > 5:
+                    alert_msg = f"More than 5 ERROR/CRITICAL logs detected in the last 60 seconds.\nCounts: ERROR={error_count}, CRITICAL={critical_count}"
+                    send_email_alert(
+                        subject="Log Anomaly Detected!",
+                        body=alert_msg
+                    )
+                    send_slack_alert(alert_msg)
+                # --- ALERTING LOGIC END ---
         elif log_source["type"] == "cloudwatch":
             for raw_log in cloudwatch_collector.cloudwatch_logs(
                 log_source["group"], log_source["stream"], log_source["region"] or "us-east-1"
@@ -74,6 +159,15 @@ def start_log_collector():
                 analyzer.add_log(parsed_log)
                 save_log_to_db(parsed_log)
                 dashboard_analysis = analyzer.analyze()
+                # --- ALERTING LOGIC START ---
+                error_count = dashboard_analysis['counts'].get('ERROR', 0)
+                critical_count = dashboard_analysis['counts'].get('CRITICAL', 0)
+                if error_count + critical_count > 5:
+                    send_email_alert(
+                        subject="Log Anomaly Detected!",
+                        body=f"More than 5 ERROR/CRITICAL logs detected in the last 60 seconds.\n\nCounts: ERROR={error_count}, CRITICAL={critical_count}"
+                    )
+                # --- ALERTING LOGIC END ---
         elif log_source["type"] == "api":
             for raw_log in api_collector.fetch_logs_from_api(log_source["api_url"]):
                 parsed_log = parser.parse_log(raw_log["message"])
@@ -84,6 +178,15 @@ def start_log_collector():
                 analyzer.add_log(parsed_log)
                 save_log_to_db(parsed_log)
                 dashboard_analysis = analyzer.analyze()
+                # --- ALERTING LOGIC START ---
+                error_count = dashboard_analysis['counts'].get('ERROR', 0)
+                critical_count = dashboard_analysis['counts'].get('CRITICAL', 0)
+                if error_count + critical_count > 5:
+                    send_email_alert(
+                        subject="Log Anomaly Detected!",
+                        body=f"More than 5 ERROR/CRITICAL logs detected in the last 60 seconds.\n\nCounts: ERROR={error_count}, CRITICAL={critical_count}"
+                    )
+                # --- ALERTING LOGIC END ---
     log_thread = threading.Thread(target=collector, daemon=True)
     log_thread.start()
 
