@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
 
 function AnomalyList({ sourceKey }) {
   const [anomalies, setAnomalies] = useState([]);
@@ -23,12 +24,16 @@ function AnomalyList({ sourceKey }) {
   }, [sourceKey]);
 
   return (
-    <div>
+    <div className="card">
       <h2>Anomalies</h2>
       {loading ? <div>Waiting for anomalies...</div> :
         anomalies.length === 0 ? <div>No anomalies detected</div> :
-        <ul>
-          {anomalies.map((a, idx) => <li key={idx} style={{color: 'red'}}>{a}</li>)}
+        <ul style={{paddingLeft: 18, margin: 0}}>
+          {anomalies.map((a, idx) => (
+            <li key={idx} style={{color: '#e74c3c', fontWeight: 600, marginBottom: 6, fontSize: 15, background: '#fff6f6', borderRadius: 8, padding: '6px 10px', boxShadow: '0 1px 4px #e74c3c22'}}>
+              <span role="img" aria-label="alert" style={{marginRight: 8}}>⚠️</span>{a}
+            </li>
+          ))}
         </ul>
       }
     </div>

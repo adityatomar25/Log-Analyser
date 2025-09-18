@@ -20,7 +20,8 @@ function Login({ onLogin }) {
         credentials: 'include',
       });
       if (res.ok) {
-        onLogin();
+        const data = await res.json();
+        onLogin(data.role); // Pass role to parent
       } else {
         const data = await res.json();
         setError(data.detail || 'Login failed');

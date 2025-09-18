@@ -104,3 +104,21 @@
 2025-09-16 14:01:34 INFO [user2] [svc-cache] [req-8753] Background job running
 2025-09-16 14:02:47 ERROR [user9] [svc-cache] [req-5853] Database connection failed
 2025-09-16 14:03:14 INFO [user10] [svc-auth] [req-7927] Background job running
+2025-09-18 22:16:52 WARNING [user9] [svc-db] [req-4883] Thread pool saturation
+2025-09-18 22:16:36 WARNING [user2] [svc-db] [req-1756] High memory usage
+{"timestamp": 1758214067.924795, "level": "WARNING", "message": "Disk space low", "user_id": "user2", "service_id": "svc-auth", "request_id": "req-8901"}
+2025-09-18 22:17:22 INFO [user10] [svc-cache] [req-6818] Service heartbeat OK
+{"timestamp": 1758213959.396052, "level": "WARNING", "message": "High memory usage", "user_id": "user3", "service_id": "svc-cache", "request_id": "req-8588"}
+2025-09-18 22:17:22 INFO [user9] [svc-auth] [req-5270] Started successfully
+{"timestamp": 1758213996.4195461, "level": "ERROR", "message": "Crash detected", "user_id": "user7", "service_id": "svc-db", "request_id": "req-9900"}
+2025-09-19 00:06:03 INFO [user7] [svc-api] [req-5433] Started successfully
+2025-09-19 00:06:10 INFO [user8] [svc-db] [req-1411] User login successful
+{"timestamp": 1758220541.932694, "level": "INFO", "message": "Booting up", "user_id": "user10", "service_id": "svc-db", "request_id": "req-7812"}
+{"timestamp": 1758220544.409714, "level": "INFO", "message": "Service heartbeat OK", "user_id": "user4", "service_id": "svc-db", "request_id": "req-4218"}
+{"timestamp": 1758220575.276274, "level": "INFO", "message": "Started successfully", "user_id": "user6", "service_id": "svc-db", "request_id": "req-5521"}
+2025-09-19 00:05:12 WARNING [user9] [svc-db] [req-1206] Disk space low
+{"timestamp": 1758220592.150956, "level": "CRITICAL", "message": "Kernel panic", "user_id": "user7", "service_id": "svc-auth", "request_id": "req-6287"}
+{"timestamp": 1758220539.322025, "level": "ERROR", "message": "Disk read failed", "user_id": "user9", "service_id": "svc-api", "request_id": "req-8338"}
+2025-09-19 00:06:06 CRITICAL [user1] [svc-api] [req-2483] Fatal memory leak
+2025-09-19 00:06:07 ERROR [user3] [svc-auth] [req-9166] Database connection failed
+2025-09-19 00:06:58 INFO [user6] [svc-api] [req-4207] Service heartbeat OK

@@ -1,17 +1,22 @@
+import os
 import yaml
 import json
 import hashlib
 
+def get_env_or_config(key, default=None):
+    return os.environ.get(key.upper(), config.get(key, default))
+
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
+GMAIL_USER = get_env_or_config("gmail_user")
+GMAIL_APP_PASSWORD = get_env_or_config("gmail_app_password")
+ALERT_RECIPIENT = get_env_or_config("alert_recipient")
+SLACK_WEBHOOK_URL = get_env_or_config("slack_webhook_url")
 
-GMAIL_USER = config["gmail_user"]
-GMAIL_APP_PASSWORD = config["gmail_app_password"]
-ALERT_RECIPIENT = config["alert_recipient"]
-SLACK_WEBHOOK_URL = config.get("slack_webhook_url")
 import requests
 ALERT_STATE_FILE = "alert_state.json"
+ALERTS_PAUSED_FILE = "alerts_paused.flag"
 
 def get_alert_state():
     try:
@@ -27,7 +32,23 @@ def set_alert_state(ts, msg_hash):
     except Exception as e:
         print(f"[AlertState] Failed to write: {e}")
 
+def are_alerts_paused():
+    import os
+    return os.path.exists(ALERTS_PAUSED_FILE)
+
+def set_alerts_paused(paused: bool):
+    import os
+    if paused:
+        with open(ALERTS_PAUSED_FILE, "w") as f:
+            f.write("paused")
+    else:
+        if os.path.exists(ALERTS_PAUSED_FILE):
+            os.remove(ALERTS_PAUSED_FILE)
+
 def send_slack_alert(message):
+    if are_alerts_paused():
+        print("[Slack] Alerts are paused. Not sending alert.")
+        return
     import time
     RATE_LIMIT_SECONDS = 300  # 5 minutes
     now = time.time()
@@ -112,9 +133,12 @@ log_source = {"type": "local", "group": None, "stream": None, "region": None, "a
 log_thread = None
 
 SESSION_COOKIE = "session_id"
-VALID_USERNAME = "admin"
-VALID_PASSWORD = "password"
-SESSIONS = set()
+# User store with roles
+USERS = {
+    "admin": {"password": "password", "role": "admin"},
+    "user": {"password": "userpass", "role": "user"}
+}
+SESSIONS = {}  # session_id -> username
 
 # Helper to start the correct log collector thread
 def start_log_collector():
@@ -141,10 +165,10 @@ def start_log_collector():
                 critical_count = dashboard_analysis['counts'].get('CRITICAL', 0)
                 if error_count + critical_count > 5:
                     alert_msg = f"More than 5 ERROR/CRITICAL logs detected in the last 60 seconds.\nCounts: ERROR={error_count}, CRITICAL={critical_count}"
-                    send_email_alert(
-                        subject="Log Anomaly Detected!",
-                        body=alert_msg
-                    )
+                    # send_email_alert(
+                    #     subject="Log Anomaly Detected!",
+                    #     body=alert_msg
+                    # )
                     send_slack_alert(alert_msg)
                 # --- ALERTING LOGIC END ---
         elif log_source["type"] == "cloudwatch":
@@ -191,26 +215,49 @@ def start_log_collector():
     log_thread.start()
 
 def get_current_user(session_id: str = Cookie(None)):
-    if session_id not in SESSIONS:
+    username = SESSIONS.get(session_id)
+    if not username:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    return VALID_USERNAME
+    return username
+
+def get_current_role(session_id: str = Cookie(None)):
+    username = SESSIONS.get(session_id)
+    if not username:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return USERS[username]["role"]
 
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    if form_data.username == VALID_USERNAME and form_data.password == VALID_PASSWORD:
+    user = USERS.get(form_data.username)
+    if user and form_data.password == user["password"]:
         session_id = secrets.token_hex(16)
-        SESSIONS.add(session_id)
-        response = JSONResponse({"message": "Login successful"})
+        SESSIONS[session_id] = form_data.username
+        response = JSONResponse({"message": "Login successful", "role": user["role"]})
         response.set_cookie(key=SESSION_COOKIE, value=session_id, httponly=True)
         return response
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 @app.post("/logout")
 def logout(session_id: str = Cookie(None)):
-    SESSIONS.discard(session_id)
+    SESSIONS.pop(session_id, None)
     response = JSONResponse({"message": "Logged out"})
     response.delete_cookie(SESSION_COOKIE)
     return response
+
+# Decorator for role-based access
+from fastapi import Security
+from functools import wraps
+
+def require_role(role):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, session_id: str = Cookie(None), **kwargs):
+            username = SESSIONS.get(session_id)
+            if not username or USERS[username]["role"] != role:
+                raise HTTPException(status_code=403, detail="Forbidden: Insufficient role")
+            return func(*args, session_id=session_id, **kwargs)
+        return wrapper
+    return decorator
 
 # Protect dashboard and API endpoints
 def require_auth(user: str = Depends(get_current_user)):
@@ -309,6 +356,35 @@ def save_log_to_db(parsed_log):
         print(f"DB error: {e}")
     finally:
         db.close()
+
+@app.delete("/logs/{log_id}")
+@require_role("admin")
+def delete_log(log_id: int, session_id: str = Cookie(None)):
+    db = SessionLocal()
+    try:
+        log_entry = db.query(Log).filter(Log.id == log_id).first()
+        if not log_entry:
+            raise HTTPException(status_code=404, detail="Log not found")
+        db.delete(log_entry)
+        db.commit()
+        return {"message": "Log deleted"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        db.close()
+
+from fastapi import APIRouter
+
+@app.get("/alerts/paused")
+def get_alerts_paused():
+    return {"paused": are_alerts_paused()}
+
+@app.post("/alerts/pause")
+def set_alerts_paused_api(data: dict = Body(...)):
+    paused = data.get("paused", False)
+    set_alerts_paused(paused)
+    return {"paused": are_alerts_paused()}
 
 # Start with local logs by default
 start_log_collector()

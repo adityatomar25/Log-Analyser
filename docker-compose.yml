@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    volumes:
+      - ./logs:/app/logs
+      - ./logs.db:/app/logs.db
+      - ./config.yaml:/app/config.yaml
+      - ./alert_state.json:/app/alert_state.json
+      - ./alerts_paused.flag:/app/alerts_paused.flag
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD}
+      - ALERT_RECIPIENT=${ALERT_RECIPIENT}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+  frontend:
+    build:
+      context: ./dashboard-frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

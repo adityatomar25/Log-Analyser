@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
+import { FaBug, FaExclamationTriangle, FaInfoCircle, FaCheckCircle, FaTrashAlt } from 'react-icons/fa';
 
 function parseLogMessage(log) {
   try {
     const msgObj = JSON.parse(log.message);
     if (msgObj && msgObj.message && msgObj.level) {
       return {
-        text: `[${msgObj.level}] ${msgObj.message} (${msgObj.user_id}, ${msgObj.service_id}, ${msgObj.request_id})`,
+        text: msgObj.message,
         level: msgObj.level,
         user: msgObj.user_id,
         service: msgObj.service_id,
@@ -19,7 +21,7 @@ function parseLogMessage(log) {
   const userMatch = log.message.match(/\[(user\d+)\]/);
   const serviceMatch = log.message.match(/\[(svc-[^\]]+)\]/);
   return {
-    text: `[${log.level}] ${log.message}`,
+    text: log.message,
     level: log.level,
     user: log.user_id || (userMatch ? userMatch[1] : ''),
     service: log.service_id || (serviceMatch ? serviceMatch[1] : ''),
@@ -32,7 +34,15 @@ function toUnixTimestamp(dtStr) {
   return Math.floor(new Date(dtStr).getTime() / 1000);
 }
 
-function LogList({ sourceKey, search }) {
+const levelIcon = {
+  'ERROR': <FaExclamationTriangle style={{color: '#e74c3c', marginRight: 4}} title="Error" />,
+  'CRITICAL': <FaBug style={{color: '#c0392b', marginRight: 4}} title="Critical" />,
+  'WARN': <FaExclamationTriangle style={{color: '#f39c12', marginRight: 4}} title="Warning" />,
+  'INFO': <FaInfoCircle style={{color: '#2980b9', marginRight: 4}} title="Info" />,
+  'DEBUG': <FaCheckCircle style={{color: '#16a085', marginRight: 4}} title="Debug" />
+};
+
+function LogList({ sourceKey, search, role }) {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,13 +85,36 @@ function LogList({ sourceKey, search }) {
   const safeLogs = Array.isArray(logs) ? logs : [];
   const filteredLogs = safeLogs.map(parseLogMessage);
 
+  // Delete log handler
+  const handleDelete = async (logId) => {
+    if (!window.confirm('Are you sure you want to delete this log?')) return;
+    await fetch(`http://localhost:8000/logs/${logId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    // Refresh logs
+    setLogs(logs => logs.filter(l => l.id !== logId));
+  };
+
   return (
-    <div>
+    <div className="card">
       <h2>Recent Logs</h2>
       {loading ? <div>Waiting for logs...</div> :
         filteredLogs.length === 0 ? <div>No logs available.</div> :
         filteredLogs.map((log, idx) => (
-          <div key={idx}>{log.text}</div>
+          <div key={idx} className="log-entry">
+            <span>
+              <span className={`log-level ${log.level}`}>{levelIcon[log.level] || null}{log.level}</span>
+              {log.text}
+              {log.user && <span style={{marginLeft: 8, color: '#888'}}>User: {log.user}</span>}
+              {log.service && <span style={{marginLeft: 8, color: '#888'}}>Service: {log.service}</span>}
+            </span>
+            {role === 'admin' && safeLogs[idx] && safeLogs[idx].id && (
+              <button style={{marginLeft: 12}} className="button-primary" onClick={() => handleDelete(safeLogs[idx].id)} title="Delete log">
+                <FaTrashAlt style={{marginRight: 4}} />Delete
+              </button>
+            )}
+          </div>
         ))
       }
     </div>

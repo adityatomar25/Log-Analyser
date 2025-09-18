@@ -86,5 +86,9 @@ logs/
 SRS.txt
 *.pdf
 
+.env
 config.yaml
+alert_state.json
+alerts_paused.flag
+logs.db
 

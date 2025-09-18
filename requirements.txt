@@ -1,3 +1,5 @@
+python-multipart
+sqlalchemy
 flask
 flask-socketio
 plotly
@@ -8,3 +10,8 @@ slack_sdk
 python-telegram-bot
 boto3
 pytest
+requests
+fastapi
+uvicorn[standard]
+pyyaml
+jinja2
