@@ -30,6 +30,19 @@ def categorize_log(log: dict) -> dict:
     except Exception:
         pass
 
+    # Try to extract [LEVEL] from bracketed log lines
+    bracket_match = re.search(r"\[(ERROR|WARNING|INFO|CRITICAL)\]", message, re.IGNORECASE)
+    if bracket_match:
+        log["level"] = bracket_match.group(1).upper()
+        return log
+
+    # Try to extract LEVEL from space-separated log lines (e.g. '2025-08-26 ERROR ...')
+    space_match = re.search(r"\b(ERROR|WARNING|INFO|CRITICAL)\b", message, re.IGNORECASE)
+    if space_match:
+        log["level"] = space_match.group(1).upper()
+        return log
+
+    # Fallback to regex patterns
     for level, pattern in LOG_LEVELS.items():
         if pattern.search(message):
             log["level"] = level

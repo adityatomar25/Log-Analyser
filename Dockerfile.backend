@@ -1,8 +1,45 @@
-# Backend Dockerfile
-FROM python:3.11-slim
+# Backend Dockerfile for Log Analyser with AI Analytics
+FROM python:3.13-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Create app user for security
+RUN adduser --disabled-password --gecos '' --shell /bin/bash appuser
+
 WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
 COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
 COPY . .
+
+# Create necessary directories and set permissions
+RUN mkdir -p /app/logs /app/data \
+    && chown -R appuser:appuser /app \
+    && chmod +x /app
+
+# Switch to non-root user
+USER appuser
+
+# Create database if it doesn't exist
+RUN python -c "import sqlite3; conn = sqlite3.connect('logs.db'); conn.close()" || true
+
 EXPOSE 8000
-CMD ["uvicorn", "dashboard:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/api/system_logs/status || exit 1
+
+# Start the application
+CMD ["uvicorn", "dashboard:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

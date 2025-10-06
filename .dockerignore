@@ -1,0 +1,67 @@
+# Git and version control
+.git
+.gitignore
+README.md
+*.md
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+
+# Node.js (for frontend)
+dashboard-frontend/node_modules/
+dashboard-frontend/build/
+dashboard-frontend/.env*
+dashboard-frontend/npm-debug.log*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and databases (will be mounted as volumes)
+*.log
+test.log
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+
+# Documentation and guides
+*.pdf
+BEDROCK_*.md
+RUN_GUIDE.md
+Major*
+
+# Test files
+tests/
+*_test.py
+test_*
+
+# Docker files (don't include in context)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Color showcase demo
+color-showcase.html
+
+# Cookies and session data
+cookies.txt
