@@ -48,15 +48,27 @@ function App() {
     const checkAuth = async () => {
       setLoading(true);
       try {
-        const res = await makeAPICall('http://localhost:8000/api/logs');
-        if (res && res.status === 200) {
-          setAuthenticated(true);
-          setError(null);
+        const res = await fetch('http://localhost:8000/api/auth/status', { 
+          credentials: 'include' 
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated) {
+            setAuthenticated(true);
+            setRole(data.role);
+            setError(null);
+          } else {
+            setAuthenticated(false);
+            setRole(null);
+          }
         } else {
           setAuthenticated(false);
+          setRole(null);
         }
       } catch (err) {
         setAuthenticated(false);
+        setRole(null);
         setError('Unable to connect to server');
       } finally {
         setLoading(false);
@@ -86,6 +98,23 @@ function App() {
     })
       .then(res => res.json())
       .then(data => setAlertsPaused(data.paused));
+  };
+
+  // Handler for logout
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:8000/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      setAuthenticated(false);
+      setRole(null);
+      setError(null);
+    } catch (err) {
+      // Even if logout fails on backend, clear frontend state
+      setAuthenticated(false);
+      setRole(null);
+    }
   };
 
   useEffect(() => {
@@ -337,9 +366,50 @@ function App() {
               <span>{darkMode ? 'Dark' : 'Light'}</span>
             </button>
             {role && (
-              <div className="role-badge">
-                <span style={{fontSize: '16px'}}>👤</span>
-                <span>{role}</span>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '8px 16px',
+                background: 'rgba(255, 255, 255, 0.15)',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+              }}>
+                <div style={{
+                  width: 32,
+                  height: 32,
+                  background: role === 'admin' 
+                    ? 'linear-gradient(135deg, #fd79a8 0%, #e84393 100%)' 
+                    : 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px'
+                }}>
+                  {role === 'admin' ? '👑' : '👤'}
+                </div>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start'
+                }}>
+                  <span style={{
+                    fontSize: '12px',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontWeight: 500,
+                    textTransform: 'capitalize'
+                  }}>
+                    {role}
+                  </span>
+                  <span style={{
+                    fontSize: '10px',
+                    color: 'rgba(255, 255, 255, 0.6)',
+                  }}>
+                    Logged in
+                  </span>
+                </div>
               </div>
             )}
             {role === 'admin' && (
@@ -370,6 +440,36 @@ function App() {
                 <span>{alertsPaused ? 'Resume Alerts' : 'Pause Alerts'}</span>
               </button>
             )}
+            <button 
+              onClick={handleLogout}
+              className="btn-modern btn-logout"
+              style={{
+                padding: '12px 20px',
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '16px',
+                cursor: 'pointer',
+                fontSize: 14,
+                fontWeight: 600,
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'linear-gradient(135deg, #fd79a8 0%, #e84393 100%)';
+                e.target.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              <span style={{fontSize: '16px'}}>🚪</span>
+              <span>Logout</span>
+            </button>
           </div>
         </header>
         <div style={{maxWidth: 1200, margin: '0 auto', padding: '0 24px'}}>

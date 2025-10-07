@@ -368,6 +368,18 @@ def logout(session_id: str = Cookie(None)):
     response.delete_cookie(SESSION_COOKIE)
     return response
 
+@app.get("/api/auth/status")
+def auth_status(session_id: str = Cookie(None)):
+    """Check authentication status and return user information"""
+    username = SESSIONS.get(session_id)
+    if username and username in USERS:
+        return {
+            "authenticated": True,
+            "user": username,
+            "role": USERS[username]["role"]
+        }
+    return {"authenticated": False}
+
 # Decorator for role-based access
 from fastapi import Security
 from functools import wraps
