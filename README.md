@@ -391,24 +391,6 @@ kubectl get pods -l app=log-analyser
 - **Data Privacy**: Configurable data retention
 - **Audit Trail**: Comprehensive activity logging
 
-## 🤝 Contributing
-
-We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md).
-
-### Development Workflow
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-### Code Standards
-- **Python**: Follow PEP 8, use Black formatter
-- **JavaScript**: Follow Airbnb style guide
-- **Documentation**: Update README and docstrings
-- **Testing**: Add tests for new features
-
 ## 🐛 Troubleshooting
 
 ### Common Issues
@@ -452,10 +434,6 @@ aws bedrock list-foundation-models --region us-east-1
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/log-analyser/discussions)
 - **Documentation**: [Wiki](https://github.com/yourusername/log-analyser/wiki)
 
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - **AWS Bedrock** for AI/ML capabilities
@@ -484,7 +462,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **⭐ Star this repository if you find it helpful!**
 
-[🚀 Get Started](#quick-start) • [📖 Documentation](#api-documentation) • [🤝 Contribute](#contributing) • [🐛 Report Bug](https://github.com/yourusername/log-analyser/issues)
 
 </div>
 
