@@ -4,7 +4,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18+-61dafb.svg)](https://reactjs.org)
 [![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock-orange.svg)](https://aws.amazon.com/bedrock/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 
 A **real-time, intelligent log analysis and monitoring system** that automates log collection, processing, and analysis from multiple sources. Leveraging **AWS Bedrock foundation models** for advanced anomaly detection and predictive insights to provide proactive monitoring and reduce system downtime.
 
@@ -18,8 +18,7 @@ A **real-time, intelligent log analysis and monitoring system** that automates l
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## 🎯 Overview
 
