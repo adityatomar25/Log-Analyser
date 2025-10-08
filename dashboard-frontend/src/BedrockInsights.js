@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import config from './config';
 import { FaBrain, FaRobot, FaChartLine, FaExclamationTriangle } from 'react-icons/fa';
 
 function BedrockInsights() {
@@ -19,7 +20,7 @@ function BedrockInsights() {
       setLoading(true);
       
       // Fetch Bedrock status
-      const statusRes = await fetch('http://localhost:8000/api/bedrock/status', {
+      const statusRes = await fetch(`${config.API_BASE_URL}/api/bedrock/status`, {
         credentials: 'include'
       });
       const statusData = await statusRes.json();
@@ -28,8 +29,8 @@ function BedrockInsights() {
       // Fetch insights if Bedrock is available
       if (statusData.enabled && statusData.available) {
         const [insightsRes, predictionsRes] = await Promise.all([
-          fetch('http://localhost:8000/api/bedrock/insights', { credentials: 'include' }),
-          fetch('http://localhost:8000/api/bedrock/predictions', { credentials: 'include' })
+          fetch(`${config.API_BASE_URL}/api/bedrock/insights`, { credentials: 'include' }),
+          fetch(`${config.API_BASE_URL}/api/bedrock/predictions`, { credentials: 'include' })
         ]);
 
         const insightsData = await insightsRes.json();
@@ -50,7 +51,7 @@ function BedrockInsights() {
 
   const toggleBedrock = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/bedrock/toggle', {
+      const response = await fetch(`${config.API_BASE_URL}/api/bedrock/toggle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

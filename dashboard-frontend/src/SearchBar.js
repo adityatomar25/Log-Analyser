@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import config from './config';
 
 function toCSV(logs) {
   if (!logs.length) return '';
@@ -30,7 +31,7 @@ function SearchBar({ onSearch }) {
     if (startTime) params.append('start_time', Math.floor(new Date(startTime).getTime() / 1000));
     if (endTime) params.append('end_time', Math.floor(new Date(endTime).getTime() / 1000));
     params.append('limit', 500); // Export up to 500 logs
-    const res = await fetch(`http://localhost:8000/api/db_logs?${params.toString()}`, { credentials: 'include' });
+    const res = await fetch(`${config.API_BASE_URL}/api/db_logs?${params.toString()}`, { credentials: 'include' });
     const logs = await res.json();
     const csv = toCSV(logs);
     const blob = new Blob([csv], { type: 'text/csv' });

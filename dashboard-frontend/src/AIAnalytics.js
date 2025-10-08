@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import config from './config';
 import './App.css';
 
 function AIAnalytics({ sourceKey }) {
@@ -16,22 +17,22 @@ function AIAnalytics({ sourceKey }) {
   });
 
   // Fetch AI analytics data
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
       const [patternsRes, trendsRes, summaryRes] = await Promise.all([
-        fetch('http://localhost:8000/api/ai/patterns?' + new URLSearchParams({
+        fetch(`${config.API_BASE_URL}/api/ai/patterns?` + new URLSearchParams({
           pattern_type: filters.patternType || undefined,
           severity: filters.severity || undefined,
           limit: 20
         }).toString(), { credentials: 'include' }),
-        fetch('http://localhost:8000/api/ai/trends?' + new URLSearchParams({
+        fetch(`${config.API_BASE_URL}/api/ai/trends?` + new URLSearchParams({
           trend_type: filters.trendType || undefined,
           timeframe: filters.timeframe
         }).toString(), { credentials: 'include' }),
-        fetch('http://localhost:8000/api/ai/analytics/summary', { credentials: 'include' })
+        fetch(`${config.API_BASE_URL}/api/ai/analytics/summary`, { credentials: 'include' })
       ]);
 
       const [patternsData, trendsData, summaryData] = await Promise.all([
@@ -50,18 +51,18 @@ function AIAnalytics({ sourceKey }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   useEffect(() => {
     fetchAnalytics();
     const interval = setInterval(fetchAnalytics, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
-  }, [filters, sourceKey]);
+  }, [fetchAnalytics, sourceKey]);
 
   // Export functionality
   const handleExport = async (format) => {
     try {
-      const response = await fetch('http://localhost:8000/api/ai/export', {
+      const response = await fetch(`${config.API_BASE_URL}/api/ai/export`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

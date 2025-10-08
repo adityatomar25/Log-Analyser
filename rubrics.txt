@@ -1,0 +1,19 @@
+
+Mid term Rubric
+
+Emphases on project working.
+• Ensure at least 60% of the code completion.
+• Programming knowledge to be assessed.
+• Software requirement specification (SRS) should be submitted as technical
+document
+
+• Technical diagram: Should produce any technical diagram (UML , ER diagram, etc.)
+explaining project working with justification of methodology.
+• Programming concepts: Should defend basic programming questions related to
+declaration and definition of function, looping conditions, guard condition and
+language understanding
+• Inter process communication:
+• Minor Project : modularity, coupling and cohesion of the project
+• Major Project : Collaboration diagram.
+• Libraries:
+• Major Project : any external library in use.

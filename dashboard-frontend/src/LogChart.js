@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import config from './config';
 import './App.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -20,7 +21,7 @@ function LogChart({ sourceKey }) {
     setCounts({}); // Reset chart on source change
     setLoading(true);
     const interval = setInterval(() => {
-      fetch('http://localhost:8000/api/anomalies', { credentials: 'include' })
+      fetch(`${config.API_BASE_URL}/api/anomalies`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => {
           setCounts(data.counts || {});

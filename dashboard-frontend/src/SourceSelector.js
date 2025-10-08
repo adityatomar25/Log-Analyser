@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import config from './config';
 
 function SourceSelector({ onSourceChange }) {
   const [source, setSource] = useState('local');
@@ -9,7 +10,7 @@ function SourceSelector({ onSourceChange }) {
 
   // Fetch current source from backend on mount
   useEffect(() => {
-    fetch('http://localhost:8000/api/source')
+    fetch(`${config.API_BASE_URL}/api/source`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         if (data && data.type) {
@@ -31,8 +32,9 @@ function SourceSelector({ onSourceChange }) {
     } else if (source === 'api') {
       data.api_url = apiUrl;
     }
-    await fetch('http://localhost:8000/api/source', {
+    await fetch(`${config.API_BASE_URL}/api/source`, {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });

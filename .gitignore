@@ -246,3 +246,175 @@ yarn.lock.orig
 
 # Environment example files that are project-specific
 .env.example
+
+.rubrics.txt
+
+# ==============================================
+# Additional Comprehensive Ignore Patterns
+# ==============================================
+
+# More specific Python cache patterns
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.Python
+.python-version
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.atom/
+.brackets.json
+*.code-workspace
+
+# MacOS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows specific files
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux specific files
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# Runtime and process files
+*.pid
+*.lock
+*.seed
+pids/
+
+# Logs and temporary files
+*.log*
+*.tmp
+*.temp
+temp/
+.temporary/
+.cache/
+
+# Build and distribution files
+build/
+dist/
+target/
+out/
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.rar
+*.7z
+
+# Docker related files
+.dockerignore.backup
+docker-compose.override.yml
+docker-compose.prod.yml
+*.dockerfile.backup
+
+# Package management
+node_modules/
+bower_components/
+jspm_packages/
+.npm/
+.yarn-cache/
+yarn-error.log
+npm-debug.log*
+
+# React/Node.js specific
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+
+# Test coverage and reports
+coverage/
+.nyc_output/
+test-results/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+junit.xml
+
+# Environment and secrets
+.env*
+!.env.example
+.envrc
+.secrets
+secrets/
+credentials/
+
+# Database files (more patterns)
+*.db*
+*.sqlite*
+*.sql.backup
+data/
+db-data/
+
+# Backup files
+*.backup
+*.bak
+*~
+.#*
+#*#
+*.orig
+
+# Application specific runtime files
+sessions/
+uploads/
+downloads/
+cache/
+.cache/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# mypy type checker
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Profiling data
+.prof
+
+# Terraform (if used for infrastructure)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes (if used)
+*.kubeconfig
+kube-config
+
+# SSL certificates and keys (security)
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# Application logs and runtime data
+logs/
+log/
+*.access.log
+*.error.log
+access.log
+error.log
+debug.log
+
+# Documentation files (ignore all .md except README.md)
+*.md
+!README.md

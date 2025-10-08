@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import config from './config';
 import './App.css';
 
 function AnomalyList({ sourceKey }) {
@@ -9,7 +10,7 @@ function AnomalyList({ sourceKey }) {
     setAnomalies([]); // Reset anomalies on source change
     setLoading(true);
     const interval = setInterval(() => {
-      fetch('http://localhost:8000/api/anomalies', { credentials: 'include' })
+      fetch(`${config.API_BASE_URL}/api/anomalies`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => {
           setAnomalies(data.anomalies || []);

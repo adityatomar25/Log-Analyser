@@ -121,13 +121,21 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Enable CORS to allow requests from the React frontend
+# Enable CORS to allow requests from the React frontend with Safari-specific configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 
@@ -357,7 +365,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
         session_id = secrets.token_hex(16)
         SESSIONS[session_id] = form_data.username
         response = JSONResponse({"message": "Login successful", "role": user["role"]})
-        response.set_cookie(key=SESSION_COOKIE, value=session_id, httponly=True)
+        response.set_cookie(
+            key=SESSION_COOKIE, 
+            value=session_id, 
+            httponly=True, 
+            samesite="lax",
+            secure=False  # Set to True in production with HTTPS
+        )
         return response
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -365,20 +379,21 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 def logout(session_id: str = Cookie(None)):
     SESSIONS.pop(session_id, None)
     response = JSONResponse({"message": "Logged out"})
-    response.delete_cookie(SESSION_COOKIE)
+    response.delete_cookie(
+        key=SESSION_COOKIE, 
+        samesite="lax",
+        secure=False  # Set to True in production with HTTPS
+    )
     return response
 
 @app.get("/api/auth/status")
-def auth_status(session_id: str = Cookie(None)):
-    """Check authentication status and return user information"""
-    username = SESSIONS.get(session_id)
-    if username and username in USERS:
-        return {
-            "authenticated": True,
-            "user": username,
-            "role": USERS[username]["role"]
-        }
-    return {"authenticated": False}
+def auth_status():
+    """Check authentication status - always returns authenticated since auth is disabled"""
+    return {
+        "authenticated": True,
+        "user": "anonymous",
+        "role": "admin"
+    }
 
 # Decorator for role-based access
 from fastapi import Security
@@ -399,26 +414,31 @@ def require_role(role):
 def require_auth(user: str = Depends(get_current_user)):
     return user
 
-@app.get("/", response_class=HTMLResponse, dependencies=[Depends(require_auth)])
+@app.get("/", response_class=HTMLResponse)
 def dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
-@app.get("/api/logs", dependencies=[Depends(require_auth)])
+@app.get("/api/logs")
 def get_logs():
     return JSONResponse(dashboard_logs[-50:])
 
-@app.get("/api/anomalies", dependencies=[Depends(require_auth)])
+@app.get("/api/anomalies")
 def get_anomalies():
     return JSONResponse(dashboard_analysis)
 
-@app.post("/api/source", dependencies=[Depends(require_auth)])
+@app.get("/api/source")
+def get_source():
+    """Get the current log source configuration"""
+    return log_source
+
+@app.post("/api/source")
 def set_source(data: dict = Body(...)):
     """Set the log source. data = {type: 'local'|'cloudwatch'|'api', ...} """
     log_source.update(data)
     start_log_collector()
     return {"status": "ok", "source": log_source}
 
-@app.get("/api/db_logs", dependencies=[Depends(require_auth)])
+@app.get("/api/db_logs")
 def get_db_logs(
     level: str = Query(None),
     user_id: str = Query(None),
@@ -530,7 +550,7 @@ def get_system_log_status():
         "running": system_log_thread and system_log_thread.is_alive() if system_log_thread else False
     }
 
-@app.post("/api/system_logs/toggle", dependencies=[Depends(require_auth)])
+@app.post("/api/system_logs/toggle")
 def toggle_system_logs(data: dict = Body(...)):
     global system_log_enabled
     enabled = data.get("enabled", False)
@@ -561,7 +581,7 @@ def get_bedrock_status():
         "last_analysis": getattr(analyzer, 'last_bedrock_analysis', 0)
     }
 
-@app.get("/api/bedrock/insights", dependencies=[Depends(require_auth)])
+@app.get("/api/bedrock/insights")
 def get_bedrock_insights():
     """Get detailed AI insights from Bedrock analysis"""
     try:
@@ -570,7 +590,7 @@ def get_bedrock_insights():
     except Exception as e:
         return {"error": f"Failed to get insights: {str(e)}"}
 
-@app.post("/api/bedrock/toggle", dependencies=[Depends(require_auth)])
+@app.post("/api/bedrock/toggle")
 def toggle_bedrock_analysis(data: dict = Body(...)):
     """Toggle Bedrock analysis on/off"""
     global analyzer
@@ -607,7 +627,7 @@ def toggle_bedrock_analysis(data: dict = Body(...)):
             "message": f"Error: {str(e)}"
         }
 
-@app.get("/api/bedrock/predictions", dependencies=[Depends(require_auth)])
+@app.get("/api/bedrock/predictions")
 def get_ai_predictions():
     """Get AI predictions about potential system issues"""
     if not analyzer.enable_bedrock or not analyzer.bedrock_client:
@@ -635,7 +655,7 @@ def get_debug_logs():
 # ENHANCED AI PATTERNS & TRENDS API ENDPOINTS
 # ==========================================
 
-@app.get("/api/ai/patterns", dependencies=[Depends(require_auth)])
+@app.get("/api/ai/patterns")
 def get_ai_patterns(
     pattern_type: Optional[str] = Query(None, description="Filter by pattern type"),
     severity: Optional[str] = Query(None, description="Filter by severity (low, medium, high, critical)"),
@@ -698,7 +718,7 @@ def get_ai_patterns(
     except Exception as e:
         return {"error": f"Failed to get patterns: {str(e)}", "patterns": []}
 
-@app.get("/api/ai/trends", dependencies=[Depends(require_auth)])
+@app.get("/api/ai/trends")
 def get_ai_trends(
     trend_type: Optional[str] = Query(None, description="Filter by trend type"),
     timeframe: Optional[str] = Query("1h", description="Timeframe: 15m, 1h, 6h, 24h"),
@@ -748,7 +768,7 @@ def get_ai_trends(
     except Exception as e:
         return {"error": f"Failed to get trends: {str(e)}", "trends": []}
 
-@app.get("/api/ai/analytics/summary", dependencies=[Depends(require_auth)])
+@app.get("/api/ai/analytics/summary")
 def get_analytics_summary():
     """Get comprehensive AI analytics summary with key metrics"""
     try:
@@ -783,7 +803,7 @@ def get_analytics_summary():
     except Exception as e:
         return {"error": f"Failed to generate analytics summary: {str(e)}"}
 
-@app.post("/api/ai/export", dependencies=[Depends(require_auth)])
+@app.post("/api/ai/export")
 def export_ai_analysis(data: dict = Body(...)):
     """Export AI analysis in various formats (JSON, CSV, PDF report)"""
     try:

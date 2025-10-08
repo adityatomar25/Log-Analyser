@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import config from './config';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ function Login({ onLogin }) {
     params.append('username', username);
     params.append('password', password);
     try {
-      const res = await fetch('http://localhost:8000/login', {
+      const res = await fetch(`${config.API_BASE_URL}/login`, {
         method: 'POST',
         body: params,
         credentials: 'include',

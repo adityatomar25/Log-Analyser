@@ -8,6 +8,7 @@ import SearchBar from './SearchBar';
 import SystemLogControl from './SystemLogControl';
 import BedrockInsights from './BedrockInsights';
 import AIAnalytics from './AIAnalytics';
+import config from './config';
 import React, { useState, useEffect } from 'react';
 
 function App() {
@@ -43,45 +44,85 @@ function App() {
       });
   };
 
-  // Check authentication on mount
+  // Check authentication on mount with timeout handling
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAuth = async () => {
+      if (!isMounted) return;
+      
+      console.log('Starting authentication check...');
       setLoading(true);
-      try {
-        const res = await fetch('http://localhost:8000/api/auth/status', { 
-          credentials: 'include' 
-        });
+      
+      const urlsToTry = ['http://127.0.0.1:8000', 'http://localhost:8000'];
+      
+      for (let i = 0; i < urlsToTry.length; i++) {
+        const url = urlsToTry[i];
+        console.log(`Trying connection to: ${url}/api/auth/status`);
         
-        if (res.ok) {
-          const data = await res.json();
-          if (data.authenticated) {
-            setAuthenticated(true);
-            setRole(data.role);
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => {
+            console.log(`Request to ${url} timed out after 3 seconds`);
+            controller.abort();
+          }, 3000);
+          
+          const res = await fetch(`${url}/api/auth/status`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Accept': 'application/json',
+            },
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (res.ok) {
+            const data = await res.json();
+            console.log(`Successfully connected to ${url}! Response:`, data);
+            
+            if (!isMounted) return;
+            
+            config.API_BASE_URL = url; // Update config with working URL
+            setAuthenticated(data.authenticated || false);
+            setRole(data.role || null);
             setError(null);
+            setLoading(false);
+            return; // Success, exit the loop
           } else {
-            setAuthenticated(false);
-            setRole(null);
+            console.log(`HTTP error from ${url}: ${res.status} ${res.statusText}`);
           }
-        } else {
-          setAuthenticated(false);
-          setRole(null);
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            console.log(`Connection to ${url} was aborted (timeout)`);
+          } else {
+            console.error(`Error connecting to ${url}:`, err.message);
+          }
         }
-      } catch (err) {
+      }
+      
+      // If we get here, all URLs failed
+      if (isMounted) {
+        console.log('All connection attempts failed');
         setAuthenticated(false);
         setRole(null);
-        setError('Unable to connect to server');
-      } finally {
+        setError('Unable to connect to the backend server. Please ensure the backend is running on port 8000.');
         setLoading(false);
       }
     };
     
     checkAuth();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Fetch alerts paused state with error handling
   useEffect(() => {
     if (authenticated) {
-      makeAPICall('http://localhost:8000/alerts/paused')
+      makeAPICall(`${config.API_BASE_URL}/alerts/paused`)
         .then(res => res ? res.json() : null)
         .then(data => data && setAlertsPaused(data.paused))
         .catch(() => setAlertsPaused(false));
@@ -90,7 +131,7 @@ function App() {
 
   // Handler to pause/resume alerts
   const toggleAlerts = () => {
-    fetch('http://localhost:8000/alerts/pause', {
+    fetch(`${config.API_BASE_URL}/alerts/pause`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -103,7 +144,7 @@ function App() {
   // Handler for logout
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:8000/logout', {
+      await fetch(`${config.API_BASE_URL}/logout`, {
         method: 'POST',
         credentials: 'include'
       });
@@ -119,7 +160,7 @@ function App() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      fetch('http://localhost:8000/api/source_warning', { credentials: 'include' })
+      fetch(`${config.API_BASE_URL}/api/source_warning`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => setApiWarning(data.warning || ""))
         .catch(() => setApiWarning(""));

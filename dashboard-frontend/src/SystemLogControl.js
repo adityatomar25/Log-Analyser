@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import config from './config';
 
 function SystemLogControl() {
   const [systemLogStatus, setSystemLogStatus] = useState({
@@ -17,7 +18,7 @@ function SystemLogControl() {
   }, []);
 
   const fetchSystemLogStatus = () => {
-    fetch('http://localhost:8000/api/system_logs/status', { 
+    fetch(`${config.API_BASE_URL}/api/system_logs/status`, { 
       credentials: 'include' 
     })
       .then(res => res.json())
@@ -33,7 +34,7 @@ function SystemLogControl() {
     setLoading(true);
     const newEnabled = !systemLogStatus.enabled;
     
-    fetch('http://localhost:8000/api/system_logs/toggle', {
+    fetch(`${config.API_BASE_URL}/api/system_logs/toggle`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },

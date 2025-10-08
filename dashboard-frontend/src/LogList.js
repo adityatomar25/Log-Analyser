@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import config from './config';
 import './App.css';
 import { FaBug, FaExclamationTriangle, FaInfoCircle, FaCheckCircle, FaTrashAlt } from 'react-icons/fa';
 
@@ -159,7 +160,7 @@ function LogList({ sourceKey, search, role }) {
     params.append('limit', 50);
     const fetchLogs = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/db_logs?${params.toString()}`, { 
+        const res = await fetch(`${config.API_BASE_URL}/api/db_logs?${params.toString()}`, { 
           credentials: 'include',
           signal: AbortSignal.timeout(10000) // 10 second timeout
         });
@@ -209,7 +210,7 @@ function LogList({ sourceKey, search, role }) {
   // Delete log handler
   const handleDelete = async (logId) => {
     if (!window.confirm('Are you sure you want to delete this log?')) return;
-    await fetch(`http://localhost:8000/logs/${logId}`, {
+    await fetch(`${config.API_BASE_URL}/logs/${logId}`, {
       method: 'DELETE',
       credentials: 'include',
     });
